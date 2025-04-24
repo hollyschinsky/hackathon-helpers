@@ -1,0 +1,149 @@
+---
+description: When building and fixing add-on code
+globs: 
+alwaysApply: false
+---
+# General Principles
+
+## Add-on Architecture
+pattern: !hasConstant(["import { addOnUISdk } from \"@adobe/add-on-ui-sdk\""])
+message: Always import the Adobe Add-on UI SDK at the top of your add-on entry file
+severity: warning
+
+## Document Sandbox Integration
+pattern: !hasConstant(["import { editor } from \"@adobe/add-on-ui-sdk/editor-api\""])
+message: If working with document content, import the editor module from the SDK
+severity: warning
+
+## SDK Initialization
+pattern: addOnUISdk.ready().then(() => {
+message: Always initialize the add-on SDK with ready() before using any SDK features
+severity: warning
+
+## Error Handling
+pattern: try {\n  // SDK calls\n} catch (error) {\n  console.error(error)\n}
+message: Wrap SDK calls in try/catch blocks to handle errors gracefully
+severity: suggestion
+
+# Add-on UI SDK Usage
+
+## Modal Dialogs
+pattern: addOnUISdk.app.ui.showModalDialog({
+message: Use modal dialogs sparingly and only when necessary for user interaction
+severity: suggestion
+
+## Performance Considerations
+pattern: setTimeout(() => { /* heavy operations */ }, 0)
+message: Defer heavy operations to avoid blocking the UI thread
+severity: suggestion
+
+# Document APIs
+
+## Editor Access
+pattern: const { selection, viewport } = editor
+message: Access editor properties for manipulating the document
+severity: information 
+
+## Document Model
+pattern: editor.context.document
+message: Use the document model to access and modify document content
+severity: information
+
+## Color Handling
+pattern: !hasConstant(["import { Color } from \"@adobe/add-on-ui-sdk/document\""])
+message: Import the Color class for working with colors in the document
+severity: warning
+
+## Client Storage
+pattern: addOnUISdk.instance.clientStorage.setValue("key", value)
+message: Use clientStorage for persisting data between sessions
+severity: suggestion
+
+# Communication Between iframe and Document Sandbox
+
+## Document Sandbox Messaging
+pattern: addOnUISdk.instance.document.createDocumentSandbox()
+message: Create a document sandbox instance for secure document operations
+severity: warning
+
+## Message Passing
+pattern: docSandbox.postMessage({ type: "ACTION", data: payload })
+message: Use postMessage for communication between iframe and document sandbox
+severity: suggestion
+
+# UI and Design
+
+## Spectrum Web Components
+pattern: !hasConstant(["import \"@spectrum-web-components"])
+message: Consider using Spectrum Web Components for a native Adobe look and feel
+severity: suggestion
+
+## Accessibility
+pattern: !hasAttribute("aria-label")
+message: Ensure all interactive elements have appropriate ARIA attributes
+severity: warning
+
+# Framework-Specific Rules
+
+## React Components
+pattern: import React from "react"
+message: When using React, ensure proper component lifecycle for SDK integration
+severity: information
+
+## Lit Components
+pattern: import { LitElement, html } from "lit"
+message: When using Lit, follow proper patterns for SDK integration
+severity: information
+
+# Add-on Manifest Configuration
+
+## Manifest Properties
+pattern: "manifestVersion": "3",
+message: Always use the latest manifest version for new add-ons
+severity: warning
+
+## Permissions
+pattern: "requiredPermissions": {
+message: Only request permissions that are necessary for your add-on functionality
+severity: warning
+
+# Best Practices
+
+## Responsive Design
+pattern: @media (max-width: 
+message: Design your add-on UI to be responsive to different panel sizes
+severity: suggestion
+
+## Localization
+pattern: import { i18n } from "./i18n"
+message: Implement localization support for global user base
+severity: suggestion
+
+## User Feedback
+pattern: addOnUISdk.app.ui.showToast({
+message: Provide clear feedback to users about the results of their actions
+severity: suggestion
+
+# Webpack and Build Configuration
+
+## Webpack Config
+pattern: module.exports = {
+message: Configure webpack properly for Adobe Express add-ons
+severity: information
+
+## Development Mode
+pattern: mode: "development"
+message: Use development mode during development for better debugging
+severity: suggestion
+
+# References and Resources
+
+## Documentation
+pattern: // For more information, see: https://developer.adobe.com/express/add-ons/docs/
+message: Refer to the official documentation for comprehensive guidance
+severity: information
+
+## Samples
+pattern: // Example based on: https://github.com/AdobeDocs/express-add-on-samples
+message: Check out sample code for reference implementations
+severity: information 

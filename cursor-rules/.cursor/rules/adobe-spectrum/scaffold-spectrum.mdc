@@ -1,0 +1,228 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Spectrum Project Scaffolding Rules
+
+## Project Setup Requirements
+
+### Required: Use Spectrum Design Tokens
+All styles must use Spectrum design tokens for consistency:
+
+```yaml
+rule:
+  id: spectrum-design-tokens
+  pattern-either:
+    - pattern: |
+        var(--spectrum-global-color-[^)]+)
+    - pattern: |
+        var(--spectrum-semantic-[^)]+)
+    - pattern: |
+        var(--spectrum-spacing-[^)]+)
+    - pattern: |
+        var(--spectrum-font-[^)]+)
+  pattern-not: |
+    #[0-9a-fA-F]{3,8}|rgb\(|rgba\(|hsl\(|hsla\(|\d+px|\d+rem|\d+em
+  message: |
+    Use Spectrum design tokens for:
+    - Colors: var(--spectrum-global-color-*)
+    - Semantic colors: var(--spectrum-semantic-*)
+    - Spacing: var(--spectrum-spacing-*)
+    - Typography: var(--spectrum-font-*)
+  severity: error
+  languages: [css, scss, less]
+```
+
+### Required: Basic Project Structure
+When creating a new Spectrum Web Components project, use this minimal structure:
+
+```yaml
+rule:
+  id: spectrum-project-structure
+  pattern: |
+    project/
+    ├── src/
+    │   ├── components/
+    │   │   └── *.ts
+    │   ├── styles/
+    │   │   └── global.css
+    │   └── main.ts
+    ├── index.html
+    └── package.json
+  message: |
+    Create a new project with the basic required files for Spectrum Web Components.
+    Global styles must be placed in src/styles/global.css.
+  severity: error
+```
+
+### Required: Global Styles Location
+Global styles must be in a dedicated CSS file:
+
+```yaml
+rule:
+  id: spectrum-global-styles
+  pattern-either:
+    - pattern: |
+        src/styles/global.css
+    - pattern: |
+        <link rel="stylesheet" href="/src/styles/global.css">
+  pattern-not: |
+    <style>.*</style>
+  message: |
+    Global styles must be:
+    1. Located in src/styles/global.css
+    2. Imported via link tag in index.html
+    3. Not defined inline in HTML files
+  severity: error
+  languages: [html, css]
+```
+
+### Required: Minimal Component Template
+Use this template for a basic Spectrum Web Components application:
+
+```yaml
+rule:
+  id: spectrum-minimal-component
+  pattern: |
+    // my-element.ts
+    import { LitElement, css, html } from 'lit'
+    import { customElement, property } from 'lit/decorators.js'
+
+    // Import Spectrum styles first
+    import '@spectrum-web-components/styles/all-medium-light.css'
+    import '@spectrum-web-components/theme/theme-light.js'
+    import '@spectrum-web-components/theme/scale-medium.js'
+    import '@spectrum-web-components/theme/sp-theme.js'
+
+    // Then import components
+    import '@spectrum-web-components/button/sp-button.js'
+
+    @customElement('my-element')
+    export class MyElement extends LitElement {
+      @property({ type: String })
+      message = 'Hello, Spectrum!'
+
+      render() {
+        return html`
+          <sp-theme theme="spectrum" scale="medium" color="light">
+            <div class="container">
+              <p class="message">${this.message}</p>
+              <sp-button variant="primary" @click=${() => alert('Clicked!')}>
+                Click Me
+              </sp-button>
+            </div>
+          </sp-theme>
+        `
+      }
+
+      static styles = css`
+        :host {
+          display: block;
+          padding: var(--spectrum-spacing-400);
+        }
+        
+        .container {
+          display: flex;
+          flex-direction: column;
+          gap: var(--spectrum-spacing-300);
+          align-items: flex-start;
+        }
+
+        .message {
+          color: var(--spectrum-global-color-gray-800);
+          font-size: var(--spectrum-font-size-200);
+          margin: 0;
+        }
+      `
+    }
+
+    declare global {
+      interface HTMLElementTagNameMap {
+        'my-element': MyElement
+      }
+    }
+  message: |
+    Use this minimal component template that includes:
+    1. Proper style imports in correct order
+    2. Basic theme setup
+    3. Simple interactive example with button
+    4. Clean layout with Spectrum CSS variables
+  severity: error
+  languages: [typescript]
+```
+
+### Required: HTML Template
+Use this template for the HTML file:
+
+```yaml
+rule:
+  id: spectrum-html-template
+  pattern: |
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Spectrum App</title>
+        <link rel="stylesheet" href="/src/styles/global.css">
+      </head>
+      <body>
+        <div id="app"></div>
+        <script type="module" src="/src/main.ts"></script>
+      </body>
+    </html>
+  message: |
+    Use this minimal HTML template with proper meta tags and global CSS import.
+  severity: error
+  languages: [html]
+```
+
+### Required: Global CSS Template
+Use this template for the global CSS file:
+
+```yaml
+rule:
+  id: spectrum-global-css
+  pattern: |
+    body {
+      margin: 0;
+      font-family: var(--spectrum-font-family-base);
+      background-color: var(--spectrum-global-color-gray-100);
+      color: var(--spectrum-global-color-gray-800);
+    }
+  message: |
+    Use this template for global styles with Spectrum design tokens.
+  severity: error
+  languages: [css]
+```
+
+### Required: Package Dependencies
+Include these minimal dependencies:
+
+```yaml
+rule:
+  id: spectrum-minimal-dependencies
+  pattern: |
+    {
+      "dependencies": {
+        "lit": "^3.0.0",
+        "@spectrum-web-components/theme": "^0.40.0",
+        "@spectrum-web-components/styles": "^0.40.0",
+        "@spectrum-web-components/button": "^0.40.0"
+      }
+    }
+  message: |
+    Include these minimal required dependencies for a Spectrum Web Components project.
+  severity: error
+  languages: [json]
+```
+
+## Usage
+1. Create a new Vite project with Lit template: `npm create vite@latest my-app -- --template lit-ts`
+2. Navigate to project: `cd my-app`
+3. Install dependencies: `npm install`
+4. Install Spectrum dependencies: `npm install @spectrum-web-components/theme @spectrum-web-components/styles @spectrum-web-components/button`
+5. Create the styles directory: `mkdir -p src/styles`
+6. Copy the templates above into their respective files
+7. Start development server: `npm run dev` 

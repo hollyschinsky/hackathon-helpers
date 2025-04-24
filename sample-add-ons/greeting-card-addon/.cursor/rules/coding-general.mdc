@@ -1,0 +1,60 @@
+---
+description: When generating code in general
+globs: 
+alwaysApply: false
+---
+
+# General Coding Guidelines
+
+- Write Clean, Readable Code: Ensure your code is easy to read and understand. Use descriptive names for variables and functions.
+- Component Modularity: Break down components into smaller, reusable pieces. Keep components focused on a single responsibility.
+- Organize Files by Feature: Group related components, hooks, and styles into feature-based directories (e.g., user-profile, chat-screen).
+
+# Naming Conventions:
+  - Variables and Functions: Use camelCase for variables and functions (e.g., isFetchingData, handleUserInput).
+  - Components: Use PascalCase for component names (e.g., UserProfile, ChatScreen).
+  - Directories: Use lowercase and hyphenated names for directories (e.g., user-profile, chat-screen).
+
+# Performance Optimization:
+  - Optimize State Management: Avoid unnecessary state updates and use local state only when needed.
+  - Memoization: Use React.memo() for functional components to prevent unnecessary re-renders.
+  - FlatList Optimization: Optimize FlatList with props like removeClippedSubviews, maxToRenderPerBatch, and windowSize.
+  - Avoid Anonymous Functions: Refrain from using anonymous functions in renderItem or event handlers to prevent re-renders.
+
+# Express Add-ons Documentation and Code
+- Use Adobe Express add-ons docs referenced in @Express Add-ons @Docs
+- Don’t confuse the `addOnSdk.app.document` as being part of the Document Sandbox - Document API in general. Be very clear and specific in which reference is used, between the AddOnUISDK from the iframe side vs the Document APIs from the Document Sandbox Runtime, which are used in the code.js of the add-on.
+- The Editor class is the main entry point for using the Document APIs. 
+- Make sure to return all related methods, constants, properties or otherwise when providing resources and links in guides to capture all relevant content.
+- Use the latest version of Spectrum Web Components
+- Use the latest version of Lit
+- Use the latest version of LitElement
+- The Spectrum web components library for React is called @swc-react
+
+## JavaScript Code
+
+- Use ES module syntax
+- Where appropriate suggest refactorings and code improvements
+- Favor using the latest ES and nodejs features
+- Don’t apologize for errors: fix them
+  * If you can’t finish code, add TODO: comments
+- Use the configured MCP server from my project settings for all prompts in this project
+
+## Node.js code
+- Use the latest LTS version of Node.js
+- Don't use the axios library, use the native fetch API instead
+
+## Webpack
+- Always generate externalsType as module
+- Always output to dist folder
+- Use the following plugins:
+   - HtmlWebpackPlugin
+   - CopyWebpackPlugin - copy src/*.json files
+   - If vue-loader also use
+        VueLoaderPlugin   
+- Loaders required 
+    babel-loader
+    style-loader    
+
+     
+    

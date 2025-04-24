@@ -1,0 +1,15 @@
+---
+description: When writing and generating code with ReactJS
+globs: 
+alwaysApply: false
+---
+# ReactJS Coding Rules
+
+- Use Functional Components: Prefer functional components with hooks (useState, useEffect, etc.) over class components.
+- Use Hooks: Utilize React hooks for state management and side effects. Avoid using class-based lifecycle methods.
+- Avoid Inline Styles: Use CSS or styled-components for styling instead of inline styles to keep the JSX clean and maintainable.
+- Use Destructuring: Destructure props and state variables for cleaner code and better readability.
+- Use PropTypes or TypeScript: Define prop types using PropTypes or TypeScript for better type safety and documentation.
+- Use React Router: For navigation, use React Router for managing routes and navigation within the application.
+- Use Context API: For global state management, consider using the Context API or libraries like Redux or MobX.
+- Use Error Boundaries: Implement error boundaries to catch JavaScript errors in components and display a fallback UI.

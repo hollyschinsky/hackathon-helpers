@@ -1,0 +1,68 @@
+---
+description: When generating webpack files for add-on projects based on Spectrum Web Components, JavaScript and uses the Document Sandbox
+globs: 
+alwaysApply: false
+---
+# Spectrum Web Components with JavaScript Add-on Webpack Configuration
+
+This document provides a sample Webpack configuration for a Spectrum Web Components and JavaScript add-on that uses the Document Sandbox.
+
+## Example webpack.config.js
+```javascript
+// webpack.config.js
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+
+const isEnvProduction = process.env.NODE_ENV === "production";
+
+module.exports = {
+    mode: isEnvProduction ? "production" : "development",
+    devtool: "source-map",
+    entry: {
+        index: "./src/ui/index.js",
+        code: "./src/sandbox/code.js"
+    },
+    experiments: {
+        outputModule: true
+    },
+    output: {
+        pathinfo: !isEnvProduction,
+        path: path.resolve(__dirname, "dist"),
+        module: true,
+        filename: "[name].js"
+    },
+    externalsType: "module",
+    externalsPresets: { web: true },
+    externals: {
+        "add-on-sdk-document-sandbox": "add-on-sdk-document-sandbox",
+        "express-document-sdk": "express-document-sdk"
+    },
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: "src/index.html",
+            scriptLoading: "module",
+            excludeChunks: ["code"]
+        }),
+        new CopyWebpackPlugin({
+            patterns: [{ from: "src/*.json", to: "[name][ext]" }]
+        })
+    ],
+    module: {
+        rules: [
+            {
+                test: /\.(js)$/,
+                use: ["babel-loader"],
+                exclude: /node_modules/
+            },
+            {
+                test: /(\.css)$/,
+                use: ["style-loader", "css-loader"]
+            }
+        ]
+    },
+    resolve: {
+        extensions: [".js", ".css"]
+    }
+};
+```

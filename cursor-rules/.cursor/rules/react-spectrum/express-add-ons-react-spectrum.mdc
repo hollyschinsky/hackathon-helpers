@@ -1,0 +1,452 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Adobe Express Add-ons based on React Coding Rules
+
+ 
+## React and React Spectrum
+### React Add-on Development
+
+When developing Adobe Express add-ons using React, follow these guidelines:
+For React-based add-ons:
+
+1. **React Spectrum Usage**
+   
+   Use React Spectrum for UI components and the Express theme:
+
+   ```bash
+   # Install React Spectrum dependencies
+   npm install @adobe/react-spectrum @react-spectrum/theme-express
+   ```
+
+   Basic setup with Express theme:
+   ```jsx
+   import { Provider, defaultTheme } from '@adobe/react-spectrum';
+   import { expressTheme } from '@react-spectrum/theme-express';
+   
+   function App() {
+     return (
+       <Provider theme={expressTheme} colorScheme="light">
+         {/* Your add-on components */}
+       </Provider>
+     );
+   }
+   ```
+
+2. **Project Structure**
+   
+   Organize React files by feature:
+   ```
+   src/
+   ├── components/
+   │   ├── media/
+   │   │   ├── MediaGrid.jsx
+   │   │   ├── MediaItem.jsx
+   │   │   └── MediaUploader.jsx
+   │   └── common/
+   │       ├── Header.jsx
+   │       └── Footer.jsx
+   ├── hooks/
+   │   ├── useDocumentSandbox.js
+   │   └── useClientStorage.js
+   ├── services/
+   │   ├── documentService.js
+   │   └── apiService.js
+   ├── App.jsx
+   └── index.jsx
+   ```
+
+3. **Component Patterns**
+   
+   Use functional components with hooks:
+   ```jsx
+   import React, { useState, useEffect } from 'react';
+   import { Button, Flex, View } from '@adobe/react-spectrum';
+   
+   function MediaUploader() {
+     const [isUploading, setIsUploading] = useState(false);
+     
+     // Use effects for SDK initialization or other side effects
+     useEffect(() => {
+       // Initialize SDK or other setup
+     }, []);
+     
+     const handleUpload = async () => {
+       try {
+         setIsUploading(true);
+         // Upload logic with addOnUISdk
+       } catch (error) {
+         console.error(error);
+       } finally {
+         setIsUploading(false);
+       }
+     };
+     
+     return (
+       <View padding="size-200">
+         <Flex direction="column" gap="size-100">
+           <Button 
+             variant="primary" 
+             isDisabled={isUploading}
+             onPress={handleUpload}
+           >
+             {isUploading ? 'Uploading...' : 'Upload Media'}
+           </Button>
+         </Flex>
+       </View>
+     );
+   }
+   ```
+
+4. **Custom Hooks**
+   
+   Create custom hooks for common add-on operations:
+
+   ```jsx
+   // useDocumentSandbox.js
+   import { useState, useEffect } from 'react';
+   
+   export function useDocumentSandbox() {
+     const [proxy, setProxy] = useState(null);
+     const [isReady, setIsReady] = useState(false);
+     
+     useEffect(() => {
+       async function initProxy() {
+         try {
+           await addOnUISdk.ready;
+           const sandboxProxy = await addOnUISdk.instance.runtime.apiProxy('documentSandbox');
+           setProxy(sandboxProxy);
+           setIsReady(true);
+         } catch (error) {
+           console.error('Failed to initialize Document Sandbox proxy:', error);
+         }
+       }
+       
+       initProxy();
+     }, []);
+     
+     return { proxy, isReady };
+   }
+   
+   // Usage
+   function ShapesComponent() {
+     const { proxy, isReady } = useDocumentSandbox();
+     
+     async function createRectangle() {
+       if (isReady) {
+         await proxy.createRectangle(200, 100, '#FF0000');
+       }
+     }
+     
+     return (
+       <Button 
+         isDisabled={!isReady} 
+         onPress={createRectangle}
+       >
+         Add Rectangle
+       </Button>
+     );
+   }
+   ```
+
+5. **State Management**
+   
+   For simple add-ons, use React Context and useReducer:
+
+   ```jsx
+   // Create a context for your add-on state
+   const AddOnContext = React.createContext();
+   
+   function addOnReducer(state, action) {
+     switch (action.type) {
+       case 'SET_IMAGES':
+         return { ...state, images: action.payload };
+       case 'SET_LOADING':
+         return { ...state, loading: action.payload };
+       default:
+         return state;
+     }
+   }
+   
+   function AddOnProvider({ children }) {
+     const [state, dispatch] = useReducer(addOnReducer, {
+       images: [],
+       loading: false
+     });
+     
+     // Provide context value
+     return (
+       <AddOnContext.Provider value={{ state, dispatch }}>
+         {children}
+       </AddOnContext.Provider>
+     );
+   }
+   
+   // Usage in components
+   function ImageGrid() {
+     const { state, dispatch } = useContext(AddOnContext);
+     
+     // Component logic
+   }
+   ```
+
+6. **React Performance Optimizations**
+   
+   For Adobe Express add-ons:
+   
+   - Use React.memo() for components that re-render frequently
+   - Implement useMemo() and useCallback() for computationally expensive operations
+   - Use virtualization for long lists (react-window or react-virtualized)
+   - Avoid unnecessary re-renders by properly structuring component hierarchy
+   
+   ```jsx
+   // Optimize component re-renders
+   const MemoizedComponent = React.memo(function Component(props) {
+     // Component logic
+   });
+   
+   function ParentComponent() {
+     // Memoize callback functions to prevent unnecessary re-renders
+     const handleClick = useCallback(() => {
+       // Handle click logic
+     }, [/* dependencies */]);
+     
+     // Memoize expensive calculations
+     const processedData = useMemo(() => {
+       return expensiveCalculation(props.data);
+     }, [props.data]);
+     
+     return <MemoizedComponent onClick={handleClick} data={processedData} />;
+   }
+   ```
+
+7. **Drag and Drop Implementation**
+   
+   Implement drag and drop with React Spectrum and addOnUISdk:
+   
+   ```jsx
+   function MediaItem({ image }) {
+     const handleDragStart = useCallback(async (e) => {
+       try {
+         // Enable drag to document with SDK
+         await addOnUISdk.app.enableDragToDocument(image.url, {
+           previewCallback: () => image.thumbnailUrl,
+           completeCallback: async () => {
+             const response = await fetch(image.url);
+             const blob = await response.blob();
+             return blob;
+           }
+         });
+       } catch (error) {
+         console.error('Drag failed:', error);
+       }
+     }, [image]);
+     
+     return (
+       <View 
+         width="size-2000"
+         height="size-2000"
+         borderWidth="thin"
+         borderRadius="medium"
+         onDragStart={handleDragStart}
+         draggable
+       >
+         <img 
+           src={image.thumbnailUrl} 
+           alt={image.title}
+           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+         />
+       </View>
+     );
+   }
+   ```
+
+8. **Modal Dialog Implementation**
+   
+   Create and handle modal dialogs in React add-ons:
+   
+   ```jsx
+   // In main component
+   async function openSettingsDialog() {
+     try {
+       const result = await addOnUISdk.app.showModalDialog({
+         variant: "custom",
+         size: { width: 600, height: 400 },
+         url: "dialog.html" // Points to a separate React app
+       });
+       
+       if (result) {
+         // Handle dialog result
+         console.log('Dialog result:', result);
+       }
+     } catch (error) {
+       console.error('Dialog error:', error);
+     }
+   }
+   
+   // In dialog.jsx (separate React app)
+   function DialogApp() {
+     const [settings, setSettings] = useState({
+       format: 'jpg',
+       quality: 'high'
+     });
+     
+     function handleSave() {
+       // Close dialog and return result
+       addOnUISdk.instance.runtime.dialog.close(settings);
+     }
+     
+     function handleCancel() {
+       // Close dialog without result
+       addOnUISdk.instance.runtime.dialog.close();
+     }
+     
+     return (
+       <Provider theme={expressTheme}>
+         <Flex direction="column" gap="size-100" padding="size-200">
+           {/* Dialog content */}
+           <ButtonGroup>
+             <Button variant="primary" onPress={handleSave}>Save</Button>
+             <Button variant="secondary" onPress={handleCancel}>Cancel</Button>
+           </ButtonGroup>
+         </Flex>
+       </Provider>
+     );
+   }
+   ```
+
+## Add-on Manifest
+
+### Manifest Configuration
+Configure manifest.json correctly:
+
+```json
+{
+  "id": "com.example.my-addon",
+  "name": "My Add-on",
+  "version": "1.0.0",
+  "manifestVersion": 2,
+  "requirements": {
+    "apps": [
+      {
+        "name": "Express",
+        "apiVersion": 1
+      }
+    ],
+    "experimentalApis": false
+  },
+  "entryPoints": [
+    {
+      "type": "panel",
+      "id": "panel1",
+      "main": "index.html",
+      "documentSandbox": "documentSandbox/code.js"
+    }
+  ]
+}
+```
+
+Enable experimentalApis for access to experimental features.
+
+## Best Practices
+
+### Error Handling
+Implement proper error handling:
+
+```javascript
+try {
+  // API calls or operations that might fail
+  await addOnUISdk.app.document.addImage(imageBlob);
+} catch (error) {
+  console.error("Failed to add image:", error);
+  // Show user-friendly error message or fallback
+}
+```
+
+Key areas to handle errors:
+- Network requests (fetch)
+- File operations
+- Document API calls
+- Communication between iframe and Document Sandbox
+
+### Performance Considerations
+Follow performance best practices:
+
+1. Minimize DOM operations and updates
+2. Use efficient selectors
+3. Limit use of heavy libraries
+4. Batch Document API operations when possible
+5. Use debouncing for input handlers
+6. Use efficient data structures
+7. Optimize image and media assets before adding to documents
+
+Example of inefficient code to avoid:
+```javascript
+// Bad - multiple sequential Document API operations
+shapes.forEach(shape => {
+  const rect = editor.createRectangle();
+  rect.width = shape.width;
+  rect.height = shape.height;
+  insertionParent.children.append(rect);
+});
+
+// Better - prepare elements then batch append
+const rectangles = shapes.map(shape => {
+  const rect = editor.createRectangle();
+  rect.width = shape.width;
+  rect.height = shape.height;
+  return rect;
+});
+insertionParent.children.appendAll(rectangles);
+```
+
+### Accessibility
+Make add-ons accessible:
+
+1. Use semantic HTML elements
+2. Add proper labels and ARIA attributes
+3. Ensure keyboard navigation works
+4. Maintain sufficient color contrast
+5. Support screen readers
+6. Use Spectrum components which have accessibility built-in
+
+Example:
+```html
+<!-- Avoid -->
+<div onclick="handleClick()">Click me</div>
+
+<!-- Better -->
+<button aria-label="Perform action" onclick="handleClick()">Click me</button>
+
+<!-- Best - Use Spectrum -->
+<sp-button aria-label="Perform action">Click me</sp-button>
+```
+
+## Webpack and Build Configuration
+
+- If you're generating webpack code, always generate externalsType as module and output to dist folder.
+- Use the following plugins:
+  - HtmlWebpackPlugin
+  - CopyWebpackPlugin - copy src/*.json files
+  - If vue-loader also use VueLoaderPlugin
+- Use the following loaders:
+  - babel-loader
+  - style-loader
+- Use `babel` for transpiling modern JavaScript to older versions.
+- Use `eslint` for linting JavaScript code.
+- Use `prettier` for code formatting.
+- Use `jest` for unit testing JavaScript code.
+- Use `mocha` and `chai` for testing JavaScript code.
+- Use `cypress` for end-to-end testing JavaScript code.
+- Use `webpack` for bundling JavaScript code.
+
+## References and Resources
+
+Key references:
+- [Add-on SDK Reference](mdc:https:/developer.adobe.com/express/add-ons/docs/references/addonsdk)
+- [Document API Reference](mdc:https:/developer.adobe.com/express/add-ons/docs/references/document-sandbox/document-apis)
+- [Manifest Schema Reference](mdc:https:/developer.adobe.com/express/add-ons/docs/references/manifest)
+- [Code Samples](mdc:https:/developer.adobe.com/express/add-ons/docs/samples)
+- [Spectrum Web Components](mdc:https:/opensource.adobe.com/spectrum-web-components)

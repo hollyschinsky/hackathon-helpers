@@ -1,0 +1,144 @@
+---
+description: When generating code and add-on projects 
+globs: 
+alwaysApply: false
+---
+# Framework Rules
+
+## Lit Framework Requirements
+
+### Required: Use Lit for Web Components
+All web components must be built using Lit framework.
+
+```yaml
+rule:
+  id: use-lit-framework
+  pattern-either:
+    - pattern: |
+        import { LitElement, html, css } from 'lit';
+    - pattern: |
+        extends LitElement
+  pattern-not: |
+    class.*extends HTMLElement
+  message: |
+    Use Lit as the framework for building web components.
+    Visit https://lit.dev/ for documentation.
+  severity: error
+  languages: [javascript, typescript]
+```
+
+### Required: Proper Lit Component Structure
+Components must follow Lit's component structure with proper decorators and lifecycle methods.
+
+```yaml
+rule:
+  id: lit-component-structure
+  pattern-either:
+    - pattern: |
+        @customElement('.*')
+        export class .* extends LitElement
+    - pattern: |
+        static styles = css`
+    - pattern: |
+        render() {
+          return html`
+  message: |
+    Follow Lit component structure with proper decorators and lifecycle methods.
+    Example: https://lit.dev/docs/components/defining/
+  severity: error
+  languages: [javascript, typescript]
+```
+
+### Required: Use Lit Decorators
+Use Lit's decorators for properties and events.
+
+```yaml
+rule:
+  id: lit-decorators
+  pattern-either:
+    - pattern: |
+        @property()
+    - pattern: |
+        @state()
+    - pattern: |
+        @query()
+    - pattern: |
+        @queryAll()
+    - pattern: |
+        @eventOptions()
+  message: |
+    Use Lit decorators for properties, state, and queries.
+    Example: @property(), @state(), @query()
+  severity: warning
+  languages: [javascript, typescript]
+```
+
+### Required: Lit Template Syntax
+Use Lit's template literal syntax for rendering.
+
+```yaml
+rule:
+  id: lit-template-syntax
+  pattern: |
+    html`.*${.*}`
+  message: |
+    Use Lit's template literal syntax for rendering components.
+    Example: html`<div>${this.value}</div>`
+  severity: error
+  languages: [javascript, typescript]
+```
+
+### Required: Lit Reactive Properties
+Define reactive properties using Lit's property system.
+
+```yaml
+rule:
+  id: lit-reactive-properties
+  pattern-either:
+    - pattern: |
+        @property({ type: .* })
+    - pattern: |
+        static properties = {
+  message: |
+    Use Lit's reactive property system for component state.
+    Example: @property({ type: String })
+  severity: error
+  languages: [javascript, typescript]
+```
+
+### Best Practice: Use Lit Styles
+Use Lit's scoped styling system with CSS tagged template literals.
+
+```yaml
+rule:
+  id: lit-styles
+  pattern: |
+    static styles = css`
+  message: |
+    Use Lit's scoped styling system with CSS tagged template literals.
+    Example: static styles = css`...`
+  severity: warning
+  languages: [javascript, typescript]
+```
+
+### Best Practice: Lit Controllers
+Use Lit controllers for sharing functionality between components.
+
+```yaml
+rule:
+  id: lit-controllers
+  pattern: |
+    extends ReactiveController
+  message: |
+    Consider using Lit controllers for sharing functionality between components.
+    See: https://lit.dev/docs/composition/controllers/
+  severity: warning
+  languages: [javascript, typescript]
+```
+
+## References
+- [Lit Documentation](mdc:https:/lit.dev/docs)
+- [Lit Components Guide](mdc:https:/lit.dev/docs/components/overview)
+- [Lit Templates Guide](mdc:https:/lit.dev/docs/templates/overview)
+- [Lit Styles Guide](mdc:https:/lit.dev/docs/components/styles)
+- [Lit Composition](mdc:https:/lit.dev/docs/composition/overview) 

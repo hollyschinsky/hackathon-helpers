@@ -1,0 +1,78 @@
+---
+description: When generating code in JavaScript
+globs: 
+alwaysApply: false
+---
+# JavaScript Coding Rules
+
+## General
+- Avoid Global Variables: Minimize the use of global variables to prevent unintended side effects.
+- Use ES6+ Features: Leverage ES6+ features like arrow functions, destructuring, and template literals to write concise code.
+- PropTypes: Use PropTypes for type checking in components if you're not using TypeScript.
+- Use `const` and `let` instead of `var` for variable declarations.
+- Use `const` for constants and `let` for variables that will change.
+- Use arrow functions for anonymous functions.
+- Use template literals for string concatenation.
+- Use destructuring for objects and arrays when possible.
+- Use `===` and `!==` instead of `==` and `!=` for comparisons.
+- Use `async/await` for asynchronous code instead of callbacks or `.then()`.
+- Use `try/catch` for error handling in asynchronous code.
+- Use `for...of` for iterating over arrays and `for...in` for iterating over objects.
+- Use `map`, `filter`, and `reduce` for array transformations instead of `for` loops.
+- Use `Object.entries()`, `Object.keys()`, and `Object.values()` for object manipulation.
+- Use `Array.from()` to convert iterable objects to arrays.
+- Use `Set` and `Map` for collections instead of arrays or objects.
+- Use `Promise.all()` for parallel asynchronous operations.
+- Use `localStorage` or `sessionStorage` for client-side storage.
+- Use `fetch` for making HTTP requests instead of `XMLHttpRequest`.
+- Use `async` and `await` for handling promises.
+- Use `import` and `export` for module loading instead of `require()` and `module.exports`.
+- Use `default` and `named` exports for module exports.
+- Use `import()` for dynamic imports.
+- Use `export * from` for re-exporting modules.
+- Use `export { default }` for re-exporting default exports.
+- Use `export { namedExport }` for re-exporting named exports.
+- Use `export { namedExport as alias }` for re-exporting named exports with aliases.
+- Use `export { namedExport1, namedExport2 }` for re-exporting multiple named exports.
+- Use `export { default as alias }` for re-exporting default exports with aliases.
+- Where appropriate suggest refactorings and code improvements
+- If you can’t finish code, add TODO: comments
+- Use `console.log()` for debugging and remove it before production.
+- If you're generating nodejs code, use the latest LTS version of Node.js.
+- If you're generating webpack code, always generate externalsType as module and output to dist folder.
+- Use the following plugins:
+  - HtmlWebpackPlugin
+  - CopyWebpackPlugin - copy src/*.json files
+  - If vue-loader also use VueLoaderPlugin
+- Use the following loaders:
+  - babel-loader
+  - style-loader
+- Use `babel` for transpiling modern JavaScript to older versions.
+- Use `eslint` for linting JavaScript code.
+- Use `prettier` for code formatting.
+- Use `jest` for unit testing JavaScript code.
+- Use `mocha` and `chai` for testing JavaScript code.
+- Use `cypress` for end-to-end testing JavaScript code.
+- Use `webpack` for bundling JavaScript code.
+
+
+## Functions
+- Use named functions instead of anonymous functions.
+- Use default parameters for function arguments.
+- Use rest parameters for variable-length arguments.
+- Use `return` statements to return values from functions.
+- Use `void` for functions that do not return a value.
+- Use `this` keyword for object methods.
+- Use `bind()`, `call()`, and `apply()` for function context binding.
+
+
+## Objects
+- Use object literals for object creation.
+- Use `Object.assign()` for object merging.
+- Use `Object.freeze()` for immutable objects.
+- Use `Object.seal()` for preventing object extensions.
+- Use `Object.create()` for creating objects with prototypes.
+- Use `Object.keys()`, `Object.values()`, and `Object.entries()` for object manipulation.
+- Use `Object.prototype.hasOwnProperty()` for checking object properties.
+- Use `Object.prototype.toString.call()` for type checking.
+

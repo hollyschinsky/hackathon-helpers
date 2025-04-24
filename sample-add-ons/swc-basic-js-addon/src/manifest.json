@@ -1,0 +1,21 @@
+{
+    "testId": "9bbad1a8-6135-4bf9-a333-e3d0b57d9be7",
+    "name": "SWC Sample",
+    "version": "1.0.0",
+    "manifestVersion": 2,
+    "requirements": {
+        "apps": [
+            {
+                "name": "Express",
+                "apiVersion": 1
+            }
+        ]
+    },
+    "entryPoints": [
+        {
+            "type": "panel",
+            "id": "panel1",
+            "main": "index.html"
+        }
+    ]
+}

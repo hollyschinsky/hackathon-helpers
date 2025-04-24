@@ -1,0 +1,193 @@
+---
+description: when generating code for express add-ons
+globs: 
+alwaysApply: false
+---
+# Adobe Express Add-on Development Rules
+
+## SDK Imports and Initialization
+
+### Missing SDK Import
+pattern: !hasConstant(['import addOnUISdk from "https://new.express.adobe.com/static/add-on-sdk/sdk.js"'])
+in: ['*.js', '*.jsx', '*.ts', '*.tsx']
+message: Missing import for the Adobe Express Add-on UI SDK. Import it with `import addOnUISdk from "https://new.express.adobe.com/static/add-on-sdk/sdk.js"`
+severity: error
+
+### Missing Document API Import
+pattern: !hasConstant(['import { editor'] && hasConstant(['documentSandbox']))
+in: ['*code.js', '*code.ts']
+message: Missing imports for the Document API. Use `import { editor, colorUtils } from "express-document-sdk"`
+severity: error
+
+### Missing Document Sandbox SDK Import
+pattern: !hasConstant(['import addOnSandboxSdk from "add-on-sdk-document-sandbox"']) && hasConstant(['documentSandbox']))
+in: ['*code.js', '*code.ts']
+message: Missing import for Document Sandbox SDK. Use `import addOnSandboxSdk from "add-on-sdk-document-sandbox"`
+severity: error
+
+### Missing SDK Initialization
+pattern: hasConstant(['import addOnUISdk']) && !hasConstant(['addOnUISdk.ready'])
+message: Always initialize the SDK before use with `await addOnUISdk.ready` or `addOnUISdk.ready.then(() => { /* code */ })`
+severity: error
+
+### Incorrect SDK Ready Usage
+pattern: hasConstant(['addOnUISdk.ready()'])
+message: Incorrect usage of SDK ready. Use `await addOnUISdk.ready` or `addOnUISdk.ready.then(() => {})` instead
+severity: error
+
+## Document API Usage
+
+### Using translateX/Y Instead of Translation
+pattern: hasConstant(['.translateX', '.translateY'])
+message: Use the `translation` property instead of translateX/translateY: `node.translation = { x: 100, y: 50 }`
+severity: warning
+
+### Deprecated Constants Reference
+pattern: hasConstant(['Constants.', 'BlendModeValue.', 'FillType.', 'StrokePosition.'])
+message: Constants are now lowercase (`constants`) and some enumerations have changed (e.g., `BlendModeValue` is now `BlendMode`)
+severity: warning
+
+### Missing Error Handling
+pattern: hasConstant(['await addOnUISdk', 'await editor']) && !hasConstant(['try {', 'catch'])
+message: Add error handling for async operations with try/catch blocks
+severity: warning
+
+### Inefficient Batch Operations
+pattern: hasConstant(['forEach(', '.append(', 'editor.create'])
+message: Consider using batch operations instead of sequential operations for better performance
+severity: suggestion
+
+## UI Components and Styling
+
+### Missing Theme Wrapper for SWC Components
+pattern: hasConstant(['<sp-']) && !hasConstant(['<sp-theme'])
+in: ['*.html', '*.jsx', '*.tsx']
+message: Wrap Spectrum Web Components with `<sp-theme>` element
+severity: warning
+
+### Missing React Theme Wrapper
+pattern: hasConstant(['from "@swc-react/']) && !hasConstant(['<Theme'])
+in: ['*.jsx', '*.tsx']
+message: Wrap swc-react components with the Theme component from @swc-react/theme
+severity: warning
+
+### Missing Theme Imports in React
+pattern: hasConstant(['from "@swc-react/theme"']) && !hasConstant(['theme-light.js', 'scale-medium.js'])
+in: ['*.jsx', '*.tsx']
+message: Import theme styles with `import '@spectrum-web-components/theme/express/theme-light.js'` and `import '@spectrum-web-components/theme/express/scale-medium.js'`
+severity: warning
+
+### Missing Accessibility Attributes
+pattern: hasConstant(['<sp-button', '<button']) && !hasConstant(['aria-label'])
+in: ['*.html', '*.jsx', '*.tsx']
+message: Add accessibility attributes such as aria-label to interactive elements
+severity: suggestion
+
+## Communication Between Environments
+
+### Missing API Exposure
+pattern: hasConstant(['import addOnSandboxSdk']) && !hasConstant(['runtime.exposeApi'])
+in: ['*code.js', '*code.ts']
+message: Use `addOnSandboxSdk.instance.runtime.exposeApi()` to expose methods from Document Sandbox to UI
+severity: warning
+
+### Missing API Proxy
+pattern: hasConstant(['import addOnUISdk']) && hasConstant(['documentSandbox']) && !hasConstant(['apiProxy'])
+message: Use `await addOnUISdk.instance.runtime.apiProxy("documentSandbox")` to access Document Sandbox methods
+severity: warning
+
+## Manifest Configuration
+
+### Invalid Manifest Version
+pattern: hasConstant(['"manifestVersion": 1'])
+in: ['manifest.json']
+message: Use manifestVersion 2 or higher for new add-ons
+severity: error
+
+### Missing Document Sandbox Entry Point
+pattern: hasConstant(['"type": "panel"']) && !hasConstant(['"documentSandbox"'])
+in: ['manifest.json']
+message: Add documentSandbox entry point if you're using Document APIs
+severity: warning
+
+### Missing Requirements
+pattern: !hasConstant(['"requirements"'])
+in: ['manifest.json']
+message: Add requirements section with supported apps and API versions
+severity: error
+
+## React Best Practices
+
+### Missing Dependencies in useEffect
+pattern: hasConstant(['useEffect(', '], [])'])
+in: ['*.jsx', '*.tsx']
+message: Consider adding dependencies to the useEffect dependency array
+severity: suggestion
+
+### Missing React.memo for Pure Components
+pattern: hasConstant(['export function ']) && hasConstant(['props', 'return']) && !hasConstant(['React.memo'])
+in: ['*.jsx', '*.tsx']
+message: Consider using React.memo for pure presentational components
+severity: suggestion
+
+### Missing useCallback for Event Handlers
+pattern: hasConstant(['function handle', 'const handle']) && hasConstant(['onClick={handle'])
+in: ['*.jsx', '*.tsx']
+message: Consider using useCallback for event handler functions passed to child components
+severity: suggestion
+
+## Storage and Data Management
+
+### Missing Client Storage Error Handling
+pattern: hasConstant(['clientStorage.setItem', 'clientStorage.getItem']) && !hasConstant(['try {', 'catch'])
+message: Add error handling for clientStorage operations
+severity: warning
+
+### Missing Initialization Check before SDK Usage
+pattern: hasConstant(['sdk.app', 'sdk.instance']) && !hasConstant(['isReady', 'sdkReady'])
+in: ['*.jsx', '*.tsx']
+message: Check if the SDK is ready before using its methods
+severity: warning
+
+## Performance Optimizations
+
+### Large Media Handling
+pattern: hasConstant(['addImage(', 'addVideo(']) && !hasConstant(['resize', 'compress'])
+message: Consider optimizing large media assets before adding them to the document
+severity: suggestion
+
+### Missing Response Checks for Fetch
+pattern: hasConstant(['fetch(']) && !hasConstant(['.ok', 'response.status'])
+message: Add response status checks for fetch operations
+severity: warning
+
+### Missing Loading State
+pattern: hasConstant(['fetch(', 'await']) && !hasConstant(['isLoading', 'loading', 'spinner'])
+in: ['*.jsx', '*.tsx']
+message: Consider adding loading state for async operations
+severity: suggestion
+
+## Modal Dialogs
+
+### Missing Dialog Result Handling
+pattern: hasConstant(['showModalDialog(']) && !hasConstant(['if (result', 'result.'])
+message: Handle the result returned from modal dialogs
+severity: warning
+
+### Missing Dialog Close with Result
+pattern: hasConstant(['runtime.dialog']) && !hasConstant(['dialog.close('])
+message: Use dialog.close() to return results from modal dialogs
+severity: warning
+
+## Project Structure and Configuration
+
+### Missing Webpack Configuration for SWC
+pattern: hasConstant(['@spectrum-web-components/', '@swc-react/']) && !hasConstant(['webpack.config.js'])
+message: Ensure proper webpack configuration for Spectrum Web Components
+severity: suggestion
+
+### Missing Package Script Configuration
+pattern: hasConstant(['webpack']) && !hasConstant(['--use webpack'])
+in: ['package.json']
+message: Add '--use webpack' to the build, start, and package scripts
+severity: warning 

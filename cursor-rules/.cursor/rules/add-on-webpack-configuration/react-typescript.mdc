@@ -1,0 +1,60 @@
+---
+description: When generating webpack files for add-on projects based on React and TypeScript
+globs: 
+alwaysApply: false
+---
+# React TypeScript Add-on Webpack Configuration 
+
+This document provides a sample Webpack configuration for a React TypeScript add-on that does not use the Document Sandbox.
+
+## Example webpack.config.js
+```javascript
+// webpack.config.js
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+
+const isEnvProduction = process.env.NODE_ENV === "production";
+
+module.exports = {
+    mode: isEnvProduction ? "production" : "development",
+    devtool: isEnvProduction ? "source-map" : "eval-source-map",
+    entry: "./src/index.tsx",
+    experiments: {
+        outputModule: true
+    },
+    output: {
+        pathinfo: !isEnvProduction,
+        path: path.resolve(__dirname, "dist"),
+        module: true,
+        filename: "index.js"
+    },
+    externalsType: "module",
+    externalsPresets: { web: true },
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: "src/index.html",
+            scriptLoading: "module"
+        }),
+        new CopyWebpackPlugin({
+            patterns: [{ from: "src/*.json", to: "[name][ext]" }]
+        })
+    ],
+    module: {
+        rules: [
+            {
+                test: /\.tsx?$/,
+                use: "ts-loader",
+                exclude: /node_modules/
+            },
+            {
+                test: /(\.css)$/,
+                use: ["style-loader", "css-loader"]
+            }
+        ]
+    },
+    resolve: {
+        extensions: [".tsx", ".ts", ".js", ".css"]
+    }
+};
+```

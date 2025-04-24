@@ -1,0 +1,397 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Web Components Rules
+
+## Spectrum Web Components Usage
+
+### Required: Use Latest Stable Version
+When using Spectrum Web Components, use the latest stable version (1.x.x) to ensure compatibility and access to the latest features.
+
+```yaml
+rule:
+  id: spectrum-version-requirement
+  pattern: |
+    "@spectrum-web-components/[^"]+": "\\^1\\.[0-9]+\\.[0-9]+"
+  pattern-not: |
+    "@spectrum-web-components/[^"]+": "\\^0\\.[0-9]+\\.[0-9]+"
+  message: |
+    Use the latest stable version (1.x.x) of Spectrum Web Components.
+    Current stable version is 1.1.2.
+    Update your package.json dependencies to use ^1.1.2 or later.
+  severity: error
+  languages: [json]
+```
+
+### Required: Version Consistency
+All Spectrum Web Components packages should use the same version to ensure compatibility.
+
+```yaml
+rule:
+  id: spectrum-version-consistency
+  pattern: |
+    {
+      "dependencies": {
+        "@spectrum-web-components/[^"]+": "\\^([0-9]+\\.[0-9]+\\.[0-9]+)",
+        "@spectrum-web-components/[^"]+": "\\^\\1"
+      }
+    }
+  message: |
+    All Spectrum Web Components packages must use the same version.
+    Example:
+    "@spectrum-web-components/button": "^1.1.2"
+    "@spectrum-web-components/theme": "^1.1.2"
+  severity: error
+  languages: [json]
+```
+
+### Required: Use Adobe Spectrum Web Components
+When building web applications, use Adobe Spectrum Web Components (@spectrum-web-components) for UI elements. Each component should be imported from its specific package.
+
+```yaml
+rule:
+  id: use-spectrum-web-components
+  pattern-either:
+    - pattern: |
+        import '@spectrum-web-components/$COMPONENT/$COMPONENT.js';
+    - pattern: |
+        import { ... } from '@spectrum-web-components/$COMPONENT/$COMPONENT.js';
+  message: |
+    Adobe Spectrum Web Components should be imported from their specific packages.
+    Example: import '@spectrum-web-components/button/sp-button.js';
+  severity: error
+  languages: [javascript, typescript]
+```
+
+### Required: Include Core Dependencies
+Ensure all necessary core Spectrum Web Components dependencies are included in package.json.
+
+```yaml
+rule:
+  id: spectrum-core-dependencies
+  pattern: |
+    {
+      "dependencies": {
+        "@spectrum-web-components/theme": "...",
+        "@spectrum-web-components/styles": "..."
+      }
+    }
+  message: |
+    Core Spectrum Web Components dependencies must be included:
+    - @spectrum-web-components/theme (includes light and dark themes)
+    - @spectrum-web-components/styles
+  severity: error
+  languages: [json]
+```
+
+### Required: Proper Theme Setup
+Always wrap the entire application with the theme provider and include necessary theme imports.
+
+```yaml
+rule:
+  id: spectrum-theme-setup
+  pattern-either:
+    - pattern: |
+        import '@spectrum-web-components/theme/sp-theme.js';
+        import '@spectrum-web-components/theme/theme-light.js';
+        import '@spectrum-web-components/theme/scale-medium.js';
+    - pattern: |
+        <sp-theme theme="spectrum" scale="medium" color="light">.*</sp-theme>
+  pattern-not: |
+    <sp-theme[^>]*>.*<sp-theme[^>]*>
+  message: |
+    The entire application must be wrapped in a single theme provider:
+    1. Import all theme components:
+       - import '@spectrum-web-components/theme/sp-theme.js'
+       - import '@spectrum-web-components/theme/theme-light.js'
+       - import '@spectrum-web-components/theme/scale-medium.js'
+    2. Wrap the app in a single theme element:
+       <sp-theme theme="spectrum" scale="medium" color="light">
+         <!-- app content -->
+       </sp-theme>
+    3. Do not nest theme providers
+  severity: error
+  languages: [javascript, typescript, html]
+```
+
+### Required: Proper Component Import Format
+Always import Spectrum components using the proper package format.
+
+```yaml
+rule:
+  id: spectrum-import-format
+  pattern-either:
+    - pattern: |
+        import { ... } from '@spectrum-web-components/$COMPONENT';
+    - pattern-not: |
+        import { ... } from 'spectrum-web-components/...';
+  message: |
+    Use the proper import format for Spectrum Web Components: 
+    import { SpComponent } from '@spectrum-web-components/component';
+  severity: error
+  languages: [javascript, typescript]
+```
+
+### Required: Register Custom Elements
+Ensure custom elements are properly registered.
+
+```yaml
+rule:
+  id: register-spectrum-components
+  pattern: |
+    customElements.define('sp-$COMPONENT', $CLASS);
+  message: |
+    Spectrum Web Components must be properly registered using customElements.define().
+  severity: error
+  languages: [javascript, typescript]
+```
+
+### Best Practice: Use Semantic Elements
+Use semantic Spectrum components that match their intended purpose.
+
+```yaml
+rule:
+  id: semantic-spectrum-usage
+  patterns:
+    - pattern: |
+        <sp-button>
+    - pattern: |
+        <sp-link>
+    - pattern: |
+        <sp-menu>
+  message: |
+    Use semantic Spectrum components that match their intended purpose.
+    Refer to https://opensource.adobe.com/spectrum-web-components/ for component guidelines.
+  severity: warning
+  languages: [javascript, typescript, html]
+```
+
+### Required: Include Theme Provider
+Ensure the Spectrum theme provider is included in the application.
+
+```yaml
+rule:
+  id: spectrum-theme-provider
+  pattern: |
+    <sp-theme[^>]*>
+  message: |
+    Applications must include the Spectrum theme provider (<sp-theme>) for proper styling.
+  severity: error
+  languages: [javascript, typescript, html]
+```
+
+### Required: No Double Registration of Custom Elements
+Custom elements must be registered only once, either using the @customElement decorator or customElements.define, but not both.
+
+```yaml
+rule:
+  id: no-double-registration
+  pattern-either:
+    - pattern: |
+        @customElement('$NAME')
+        export class $CLASS
+      pattern-not-inside: |
+        customElements.define('$NAME', $CLASS)
+    - pattern: |
+        customElements.define('$NAME', $CLASS)
+      pattern-not-inside: |
+        @customElement('$NAME')
+        export class $CLASS
+  message: |
+    Custom elements should be registered only once.
+    Use either @customElement decorator OR customElements.define, not both.
+    Example:
+    @customElement('my-element')
+    export class MyElement extends LitElement {}
+  severity: error
+  languages: [javascript, typescript]
+```
+
+### Required: Import Spectrum Styles
+All applications using Spectrum Web Components must import the necessary style and theme files.
+
+```yaml
+rule:
+  id: spectrum-style-imports
+  pattern-either:
+    - pattern: |
+        import '@spectrum-web-components/styles/all-$SCALE-$THEME.css';
+    - pattern: |
+        import '@spectrum-web-components/theme/theme-$THEME.js';
+    - pattern: |
+        import '@spectrum-web-components/theme/scale-$SCALE.js';
+  message: |
+    Import required Spectrum style and theme files:
+    1. import '@spectrum-web-components/styles/all-medium-light.css';
+    2. import '@spectrum-web-components/theme/theme-light.js';
+    3. import '@spectrum-web-components/theme/scale-medium.js';
+  severity: error
+  languages: [javascript, typescript]
+```
+
+### Required: Style Import Order
+Spectrum style imports must come before component imports to ensure proper styling.
+
+```yaml
+rule:
+  id: spectrum-style-import-order
+  pattern: |
+    // Import styles first
+    import '@spectrum-web-components/styles/.*';
+    import '@spectrum-web-components/theme/.*';
+    .*
+    // Import components
+  message: |
+    Import Spectrum styles before importing components:
+    1. Style imports (@spectrum-web-components/styles/*)
+    2. Theme imports (@spectrum-web-components/theme/*)
+    3. Component imports
+  severity: error
+  languages: [javascript, typescript]
+```
+
+### Required: Use Proper Card Slots
+Cards must use only the allowed slots: 'actions', 'cover-photo', 'description', 'footer', 'heading', 'preview', and 'subheading'.
+
+```yaml
+rule:
+  id: spectrum-card-slots
+  pattern-either:
+    - pattern: |
+        slot="actions"
+    - pattern: |
+        slot="cover-photo"
+    - pattern: |
+        slot="description"
+    - pattern: |
+        slot="footer"
+    - pattern: |
+        slot="heading"
+    - pattern: |
+        slot="preview"
+    - pattern: |
+        slot="subheading"
+  pattern-not: |
+    slot="[^(actions|cover-photo|description|footer|heading|preview|subheading)]"
+  message: |
+    sp-card only accepts the following slots:
+    - slot="actions" - For sp-action-menu element outlining actions
+    - slot="cover-photo" - Cover photo for Default and Quiet Cards
+    - slot="description" - Card description
+    - slot="footer" - Footer text
+    - slot="heading" - HTML content for the heading
+    - slot="preview" - Preview image for Gallery Cards
+    - slot="subheading" - HTML content for the subheading
+  severity: error
+  languages: [javascript, typescript, html]
+```
+
+## Spectrum CSS Variables and Tokens
+
+### Required: Use Spectrum Color Tokens
+All color values must use Spectrum CSS color tokens instead of hardcoded values.
+
+```yaml
+rule:
+  id: spectrum-color-tokens
+  pattern-either:
+    - pattern-not: |
+        color: #[0-9a-fA-F]{3,8};
+    - pattern-not: |
+        color: rgb\([^)]+\);
+    - pattern-not: |
+        color: rgba\([^)]+\);
+    - pattern-not: |
+        color: hsl\([^)]+\);
+    - pattern-not: |
+        color: hsla\([^)]+\);
+  pattern: |
+    color: var\(--spectrum-[^)]+\);
+  message: |
+    Use Spectrum CSS color tokens instead of hardcoded colors.
+    Example: var(--spectrum-global-color-gray-800)
+  severity: error
+  languages: [css, scss, less]
+```
+
+### Required: Use Spectrum Size Tokens
+All size measurements must use Spectrum size tokens for consistency.
+
+```yaml
+rule:
+  id: spectrum-size-tokens
+  pattern-either:
+    - pattern-not: |
+        \d+px
+    - pattern-not: |
+        \d+rem
+    - pattern-not: |
+        \d+em
+  pattern: |
+    var(--spectrum-[^)]+)
+  message: |
+    Use Spectrum size tokens instead of hardcoded values.
+    Example: var(--spectrum-spacing-300)
+  severity: error
+  languages: [css, scss, less]
+```
+
+### Required: Use Spectrum Animation Tokens
+All animation timings and easings must use Spectrum animation tokens.
+
+```yaml
+rule:
+  id: spectrum-animation-tokens
+  pattern-either:
+    - pattern: |
+        transition: [^;]+var\(--spectrum-animation-[^)]+\)
+    - pattern: |
+        animation: [^;]+var\(--spectrum-animation-[^)]+\)
+  message: |
+    Use Spectrum animation tokens for transitions and animations.
+    Example: var(--spectrum-animation-duration-100)
+  severity: error
+  languages: [css, scss, less]
+```
+
+### Required: Use Spectrum Typography Tokens
+All typography-related properties must use Spectrum typography tokens.
+
+```yaml
+rule:
+  id: spectrum-typography-tokens
+  pattern-either:
+    - pattern: |
+        font-size: var\(--spectrum-[^)]+\)
+    - pattern: |
+        line-height: var\(--spectrum-[^)]+\)
+    - pattern: |
+        font-weight: var\(--spectrum-[^)]+\)
+  message: |
+    Use Spectrum typography tokens for font properties.
+    Example: var(--spectrum-font-size-100)
+  severity: error
+  languages: [css, scss, less]
+```
+
+### Best Practice: Use Semantic Color Tokens
+Use semantic color tokens when available instead of global color tokens.
+
+```yaml
+rule:
+  id: spectrum-semantic-colors
+  pattern: |
+    var\(--spectrum-semantic-[^)]+\)
+  message: |
+    Prefer semantic color tokens over global color tokens when available.
+    Example: var(--spectrum-semantic-positive-color-background) over var(--spectrum-global-color-green-400)
+  severity: warning
+  languages: [css, scss, less]
+```
+
+## References
+- [Spectrum Web Components Documentation](mdc:https:/opensource.adobe.com/spectrum-web-components)
+- [Getting Started Guide](mdc:https:/opensource.adobe.com/spectrum-web-components/getting-started)
+- [Component Library](mdc:https:/opensource.adobe.com/spectrum-web-components/components) 
