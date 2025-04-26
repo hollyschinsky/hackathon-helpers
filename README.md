@@ -105,9 +105,11 @@ To use the Cursor rules in your project:
 ## Resources
 
 - [Adobe Express Add-ons Documentation](https://developer.adobe.com/express/add-ons/docs/)
+
+   - [Express Add-ons Public Documentation Indexing](https://rubenrincon.github.io/cleandocs/) - use this link for indexing the public documentation in Cursor
+
 - [Spectrum Web Components](https://opensource.adobe.com/spectrum-web-components/)
 - [Lit Framework Documentation](https://lit.dev/)
-- [React Spectrum](https://react-spectrum.adobe.com/react-spectrum/index.html)
 - [Cursor Editor](https://cursor.sh/)
 
 ## License
