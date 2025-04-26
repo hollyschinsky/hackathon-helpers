@@ -1,8 +1,6 @@
 # Spectrum Web Components Add-on Sample
 
-This sample Adobe Express add-on demonstrates how to integrate Spectrum Web Components (SWC) to create a UI that follows Adobe's design system in a basic JavaScript project.
-
-![Spectrum Web Components](https://opensource.adobe.com/spectrum-web-components/img/spectrum-web-components.svg)
+This sample Adobe Express add-on demonstrates how to integrate [Spectrum Web Components (SWC)](https://opensource.adobe.com/spectrum-web-components/) to create a UI that follows Adobe's design system in a basic JavaScript project.
 
 ## Features
 
