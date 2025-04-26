@@ -1,0 +1,21 @@
+{
+    "testId": "8c235cb0-caba-423a-b94b-72f371e2d60d",
+    "name": "Bingo Card Generator",
+    "version": "1.0.0",
+    "manifestVersion": 2,
+    "requirements": {
+        "apps": [
+            {
+                "name": "Express",
+                "apiVersion": 1
+            }
+        ]
+    },
+    "entryPoints": [
+        {
+            "type": "panel",
+            "id": "panel1",
+            "main": "index.html"
+        }
+    ]
+}

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="description" content="Get started with Add-on development using JavaScript" />
+        <meta name="keywords" content="Adobe, Express, Add-On, JavaScript" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Bingo Card Generator</title>
+        <style>
+            sp-theme {
+                margin: 0 var(--spectrum-global-dimension-static-size-100);
+                display: grid;
+            }
+
+            h3 {
+                font-weight: var(--spectrum-global-font-weight-thin);
+                /* font-weight: var(--spectrum-global-font-weight-black); */
+            }
+            
+            sp-swatch {
+                width: var(--spectrum-swatch-size-medium);                
+            }
+
+            sp-button {
+                flex: 1;
+                max-width: calc(
+                    (100% - var(--spectrum-global-dimension-static-size-250)) / 2
+                );
+            }
+
+            sp-textfield,
+            sp-picker {
+                width: var(--spectrum-global-dimension-static-size-1700);
+                display: flex;
+            }
+
+            sp-number-field {            
+                width: 100%;
+            }
+
+            sp-button-group {
+                margin-top: var(--spectrum-global-dimension-static-size-300);
+                width: 100%;
+                display: flex;
+                justify-content: space-between;
+            }
+            
+            sp-slider {
+                /* width: 100%; */
+                /* --spectrum-slider-font-size: var(--spectrum-font-size-100); */
+                width: var(--spectrum-global-dimension-static-size-2800);            
+            } 
+
+            sp-field-label {
+                font-size: var(--spectrum-global-dimension-font-size-100);        
+            }
+
+            .color-well {
+                cursor: pointer;
+                --mod-swatch-border-thickness: var(--spectrum-divider-thickness-small);
+                --mod-swatch-border-color: var(--spectrum-transparent-black-500);
+            }
+
+            .row {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                width: 100%;
+                align-items: flex-end;
+            }
+
+            .column {
+                display: flex;
+                flex-direction: column;        
+            }
+
+            .gap-20 {
+                gap: var(--spectrum-global-dimension-static-size-250); /* 20px */
+            }
+
+            .margin-top-10 {
+                margin-top: var(--spectrum-global-dimension-static-size-125); /* 10px */
+            }
+
+            #bingoCanvas {
+                width: 290px;       
+            }
+        </style>
+    </head>
+    <body>        
+        <sp-theme scale="medium" color="light" theme="express">
+            <h3>Customize a bingo card with the settings below:</h3>
+            <div class="row gap-20"> 
+                <div class="column">
+                    <sp-field-label for="bgColorSwatch" size="m">Background color</sp-field-label>
+                    <sp-swatch id="bgColorSwatch" class="color-well"></sp-swatch>
+                    <input type="color" id="bgColorPicker" style="display: none;"/>                    
+                </div>
+                <div class="column">
+                    <sp-field-label for="fgColorSwatch" size="m">Number color</sp-field-label>
+                    <sp-swatch id="fgColorSwatch" class="color-well"></sp-swatch>
+                    <input type="color" id="fgColorPicker" style="display: none;"/>                    
+                </div>                                                           
+                <div class="column">
+                    <sp-field-label for="titleColorSwatch" size="m">Title color</sp-field-label>
+                    <sp-swatch id="titleColorSwatch" class="color-well"></sp-swatch>
+                    <input type="color" id="titleColorPicker" style="display: none;">                    
+                </div>                        
+            </div>  
+            <div class="row gap-20 margin-top-10">  
+                <div class="column">
+                    <sp-field-label for="fontWeightPicker">Font Weight</sp-field-label>
+                    <sp-picker id="fontWeightPicker" size="m" value="normal">
+                        <sp-menu-item value="normal">Normal</sp-menu-item>                        
+                        <sp-menu-item value="bold">Bold</sp-menu-item>                            
+                        <sp-menu-item value="lighter">Lighter</sp-menu-item>                
+                    </sp-picker>
+                </div>     
+                <div class="column gap-20">
+                    <sp-switch id="freeSpaceToggle" emphasized value="on" checked size="l">Free space</sp-switch>                               
+                </div>                                                        
+            </div>                   
+            <div class="row gap-20">                    
+                <sp-slider label="Gridlines width" id="gridlineSize" variant="filled" editable 
+                    hide-stepper min="1" max="10" value="5"
+                    format-options='{"style": "unit", "unit": "px"}' step="1">
+                </sp-slider>
+                <div class="column">
+                    <sp-field-label for="gridlinesColorSwatch" size="m">Color</sp-field-label>
+                    <sp-swatch id="gridlinesColorSwatch" class="color-well"></sp-swatch>
+                    <input type="color" id="gridlinesColorPicker" style="display: none;">                                            
+                </div>
+            </div> 
+            <div class="margin-top-10">
+                <sp-button-group horizontal>
+                    <sp-button id="generateBtn" disabled>Generate card</sp-button>
+                    <sp-button id="addBtn" variant="secondary" disabled>Add to page</sp-button>
+                </sp-button-group>              
+            </div>                
+            <div class="margin-top-10">            
+                <canvas id="bingoCanvas"/>            
+            </div>                            
+        </sp-theme>
+        <script type="module" src="index.js"></script>
+    </body>
+</html>
